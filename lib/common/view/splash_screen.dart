@@ -39,6 +39,11 @@ class _SplashScreenState extends State<SplashScreen> {
           'authorization': 'Bearer $refreshToken',
         }),
       );
+
+      // 위에 함수로 리프레시 토큰으로 액세스토큰을 받는거였었나 갱신함
+      await storage.write(key:ACCESS_TOKEN_KEY,value: resp.data['accessToken']);
+
+
       // 정상적으로 발급 받았으면 루트탭 이동
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(
