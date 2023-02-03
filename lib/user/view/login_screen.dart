@@ -25,16 +25,6 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     final dio = Dio();
 
-    final emulatorIp = '10.0.2.2:3000';
-    final simulatorIp = '127.0.0.1:3000';
-    final ip;
-    // 에뮬마다 로컬호스트 달라서 처리하기 위해 사용
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      ip = emulatorIp;
-    } else {
-      ip = simulatorIp;
-    }
-
     // 디폴트 레이아웃으로 감싸서 추후 유지보수 용이하도록 , 기능 추가도 한 번에
     return DefaultLayout(
         child: SafeArea(
@@ -60,6 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 width: MediaQuery.of(context).size.width / 3 * 2,
               ),
               CustomTextFormField(
+                initText: 'test@codefactory.ai',
                 hintText: '이메일을 입력해주세요',
                 // 텍스트 필드에 입력될 때마다 호출되며 value는 입력된 값
                 onChanged: (String value) {
@@ -70,6 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 height: 16.0,
               ),
               CustomTextFormField(
+                initText: 'testtest',
                 hintText: '비밀번호를 입력해주세요',
                 onChanged: (String value) {
                   password = value;
@@ -125,17 +117,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               TextButton(
                 onPressed: () async {
-                  final refreshToken =
-                      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RAY29kZWZhY3RvcnkuYWkiLCJzdWIiOiJmNTViMzJkMi00ZDY4LTRjMWUtYTNjYS1kYTlkN2QwZDkyZTUiLCJ0eXBlIjoicmVmcmVzaCIsImlhdCI6MTY3NTE2NTU4MCwiZXhwIjoxNjc1MjUxOTgwfQ.XkcNmLtYBsWFemWcvefKSaOx4aAqL-r2Um6S6E1tIPQ';
-                  final resp = await dio.post(
-                    'http://$ip/auth/token',
-                    options: Options(headers: {
-                      'authorization': 'Bearer $refreshToken',
-                    }),
-                  );
 
-                  //액세스 토큰이 나옴
-                  print(resp.data);
                 },
                 child: Text('회원가입'),
                 style: TextButton.styleFrom(foregroundColor: Colors.black),

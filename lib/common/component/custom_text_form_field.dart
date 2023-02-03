@@ -8,6 +8,7 @@ class CustomTextFormField extends StatelessWidget {
   final bool obscureText;
   final bool autofocus;
   final ValueChanged<String>? onChanged;
+  final String? initText;
 
   // 여기서 기본값 지정을 해 줄수가 있네
   const CustomTextFormField({
@@ -16,6 +17,7 @@ class CustomTextFormField extends StatelessWidget {
     this.obscureText = false,
     this.autofocus = false,
     required this.onChanged,
+    this.initText,
     Key? key,
   }) : super(key: key);
 
@@ -30,6 +32,7 @@ class CustomTextFormField extends StatelessWidget {
     );
 
     return TextFormField(
+      initialValue: initText,
       // 커서 색상
       cursorColor: PRIMARY_COLOR,
       // 비밀 번호 입력할때 사용 true면 가려짐

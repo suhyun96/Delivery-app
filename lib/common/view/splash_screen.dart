@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:lv2/common/const/colors.dart';
 import 'package:lv2/common/const/data.dart';
@@ -13,7 +14,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-
   @override
   void initState() {
     super.initState();
@@ -22,25 +22,56 @@ class _SplashScreenState extends State<SplashScreen> {
     checkToken();
   }
 
-  void checkToken() async{
+  void checkToken() async {
     // 스토리지에서 키값을 통해 값을 받아오기
     // test@codefactory.ai
     final refreshToken = await storage.read(key: REFRESH_TOKEN_KEY);
     final accessToken = await storage.read(key: ACCESS_TOKEN_KEY);
 
-    print(refreshToken);
-    print(accessToken);
-    // 둘 중 하나가 널인 경우 로그인 화면으로 감
-    if(refreshToken == null || accessToken == null){
-      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (_)=> LoginScreen(),), (route) => false);
-    }else{
-      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (_)=> RootTab(),), (route) => false);
+    final dio = Dio();
 
+    //상태코드가 200 이외면 에러니까 예외처리
+    try {
+      // 리프레시 토큰 발급
+      final resp = await dio.post(
+        'http://$ip/auth/token',
+        options: Options(headers: {
+          'authorization': 'Bearer $refreshToken',
+        }),
+      );
+      // 정상적으로 발급 받았으면 루트탭 이동
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (_) => RootTab(),
+          ),
+              (route) => false);
+
+      // 에러가 나면 토큰이 문제든 머가 문제가 생긴거임 -> 로그인으로 이동
+    } catch (e) {
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (_) => LoginScreen(),
+          ),
+              (route) => false);
     }
 
+/*    // 둘 중 하나가 널인 경우 로그인 화면으로 감
+    if (refreshToken == null || accessToken == null) {
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (_) => LoginScreen(),
+          ),
+          (route) => false);
+    } else {
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (_) => RootTab(),
+          ),
+          (route) => false);
+    }*/
   }
 
-  void deleteToken() async{
+  void deleteToken() async {
     await storage.deleteAll();
   }
 
@@ -56,9 +87,11 @@ class _SplashScreenState extends State<SplashScreen> {
           children: [
             Image.asset(
               'asset/img/logo/logo.png',
-              width: MediaQuery.of(context).size.width/2,
+              width: MediaQuery.of(context).size.width / 2,
             ),
-            const SizedBox(height: 16.0,),
+            const SizedBox(
+              height: 16.0,
+            ),
             CircularProgressIndicator(
               color: Colors.white,
             )
